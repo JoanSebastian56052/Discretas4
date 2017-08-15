@@ -3,32 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package prueba;
-
-import java.util.Random;
 
 /**
  *
- * @author joan.morales
+ * @author lis
  */
-public class Prueba {
+public class ADGFXClass {
     public static int[][]  alfabeto = new int[5][5];
-    public static String letraA;
-    public static String letraB;
     public static String[] alphabetPlane = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     public static String[] alphabetCiphered = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-    public static String clave;
     public static int[] visitados = new int[alphabetPlane.length - 1];
     public static String[] newAlphabetPlane = new String[alphabetPlane.length - 1];
-        public static String[] newAlphabetCiphered = new String[alphabetPlane.length - 1];
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    public static String[] newAlphabetCiphered = new String[alphabetPlane.length - 1];
+   
+    public static String ADFGX(String texto, String key, boolean action, String letraA, String letraB) {
         // TODO code application logic here
-        letraA = "i";
-        letraB = "j";
-        clave = "ADGFX";
+
         String text = "cualquiera";
         
         int aux=0;
@@ -40,12 +30,6 @@ public class Prueba {
             }
             aux ++;
         }
-        alfabeto = randomPropio();
-        System.out.println(encrypt(text));
-        System.out.println(decrypt(encrypt(text)));
-        
-    }
-    public static int[][] randomPropio() {
         int minimum = 0;
         int maximum = 25;
         int randomNum;
@@ -57,13 +41,19 @@ public class Prueba {
                     randomNum = minimum + (int)(Math.random() * maximum);
                 }
                 System.out.println("arroje esto: " + randomNum);
-                ran[j][k] = randomNum;
+                alfabeto[j][k] = randomNum;
                 visitados[randomNum] = 1;
             }
         }
-        return ran;
+        
+        if(action) {
+            return encrypt(text, key, letraA, letraB);
+        } else {
+            return decrypt(encrypt(text, key, letraA, letraB), key, letraA, letraB);
+        }
     }
-    public static String buscarPos(char letra) {
+    
+    public static String buscarPos(char letra, String letraA, String letraB) {
         String letra2 = ""+letra;
         for(int x = 0; x < 5; x ++) {
             for(int y = 0; y < 5; y++) {
@@ -77,7 +67,7 @@ public class Prueba {
         }
         return null;
     }
-    public static String decrypt(String text) {
+    public static String decrypt(String text, String key, String letraA, String letraB) {
         char par1;
         char par2;
         int posFil=0;
@@ -87,11 +77,11 @@ public class Prueba {
             par1=text.charAt(f);
             f++;
             par2=text.charAt(f);
-            for(int g = 0; g < clave.length(); g ++) {
-                if(clave.charAt(g) == par1) {
+            for(int g = 0; g < key.length(); g ++) {
+                if(key.charAt(g) == par1) {
                     posFil = g;
                 }
-                if(clave.charAt(g) == par2) {
+                if(key.charAt(g) == par2) {
                     posCol = g;
                 }
             }
@@ -99,14 +89,14 @@ public class Prueba {
         }
         return (desencriptado);
     }
-    public static String encrypt(String text) {
+    public static String encrypt(String text, String key, String letraA, String letraB) {
         String encriptado = "";
         String posicion = "";
         for(int i = 0; i < text.length(); i++) {
-            posicion = buscarPos(text.charAt(i));
+            posicion = buscarPos(text.charAt(i), letraA, letraB);
             System.out.println("posicion" + posicion);
-            encriptado += clave.charAt(Integer.parseInt(""+posicion.charAt(0)));
-            encriptado += clave.charAt(Integer.parseInt(""+posicion.charAt(1)));
+            encriptado += key.charAt(Integer.parseInt(""+posicion.charAt(0)));
+            encriptado += key.charAt(Integer.parseInt(""+posicion.charAt(1)));
         }
         return encriptado;
     }
@@ -116,4 +106,5 @@ public class Prueba {
         } 
         return false;
     }
+    
 }
