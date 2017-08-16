@@ -519,7 +519,7 @@ public class ADGFX extends javax.swing.JFrame {
         }
         int[][] newAlfabeto = new int[5][5];
         String result = ADGFXClass.ADFGX(word, textkey, encryptText, letraA, letraB);
-                newAlfabeto = ADGFXClass.alfabeto;
+        newAlfabeto = ADGFXClass.alfabeto;
         key1C.setText(""+textkey.charAt(0));
         key1F.setText(""+textkey.charAt(0));
         key2C.setText(""+textkey.charAt(1));

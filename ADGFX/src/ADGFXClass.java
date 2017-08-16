@@ -19,37 +19,36 @@ public class ADGFXClass {
     public static String ADFGX(String texto, String key, boolean action, String letraA, String letraB) {
         // TODO code application logic here
 
-        String text = "cualquiera";
-        
+        //String text = "cualquiera";
+        String sinEspacio = eliminarEspacios(texto);
         int aux=0;
-        for(int i= 0; i < alphabetPlane.length; i++) {
-            if(alphabetPlane[i].equals(letraA)) {
-                aux = aux - 1;
-            } else {
-                newAlphabetPlane[aux] = alphabetPlane[i];
-            }
-            aux ++;
-        }
-        int minimum = 0;
-        int maximum = 25;
-        int randomNum;
-        int[][] ran = new int[5][5];
-        for(int j = 0; j < 5; j ++) {
-            for(int k = 0; k < 5; k++) {
-                randomNum = minimum + (int)(Math.random() * maximum);
-                while(fueVisitado(randomNum)) {
-                    randomNum = minimum + (int)(Math.random() * maximum);
-                }
-                System.out.println("arroje esto: " + randomNum);
-                alfabeto[j][k] = randomNum;
-                visitados[randomNum] = 1;
-            }
-        }
-        
         if(action) {
-            return encrypt(text, key, letraA, letraB);
+            for(int i= 0; i < alphabetPlane.length; i++) {
+                if(alphabetPlane[i].equals(letraA)) {
+                    aux = aux - 1;
+                } else {
+                    newAlphabetPlane[aux] = alphabetPlane[i];
+                }
+                aux ++;
+            }
+            int minimum = 0;
+            int maximum = 25;
+            int randomNum;
+            int[][] ran = new int[5][5];
+            for(int j = 0; j < 5; j ++) {
+                for(int k = 0; k < 5; k++) {
+                    randomNum = minimum + (int)(Math.random() * maximum);
+                    while(fueVisitado(randomNum)) {
+                        randomNum = minimum + (int)(Math.random() * maximum);
+                    }
+                    System.out.println("arroje esto: " + randomNum);
+                    alfabeto[j][k] = randomNum;
+                    visitados[randomNum] = 1;
+                }
+            }
+            return encrypt(sinEspacio, key, letraA, letraB);
         } else {
-            return decrypt(encrypt(text, key, letraA, letraB), key, letraA, letraB);
+            return decrypt(sinEspacio, key, letraA, letraB);
         }
     }
     
@@ -105,6 +104,15 @@ public class ADGFXClass {
             return true;
         } 
         return false;
+    }
+    public static String eliminarEspacios(String text){
+        String texto = "";
+        for(int i = 0; i < text.length(); i++){
+            if(!("" + text.charAt(i)).equals(" ")){
+                texto = texto + text.charAt(i);
+            }
+        }
+        return texto;
     }
     
 }
