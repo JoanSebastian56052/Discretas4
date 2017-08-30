@@ -1,3 +1,12 @@
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -14,11 +23,17 @@ public class ADGFX extends javax.swing.JFrame {
      * Creates new form ADGFX
      */
     public static String[] alphabetPlane = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-
+    File file;
+    String letraA = "";
+    String letraB = "";
     public ADGFX() {
         initComponents();
         action.setEnabled(false);
         exit.setEnabled(false);
+        load.setEnabled(false);
+        textResult.setText("EL archivo a cargar contiene: \n 1. En la primer linea las letras que se manejaran igual "
+                + "en la encriptacion o en la desencriptacion \n 2. En la segunda linea y en fila escribir el orden en el que desea el alfabeto, "
+                + "sin incluir la letra que se manejara igual que la otra sleccionada");
     }
 
     /**
@@ -38,10 +53,6 @@ public class ADGFX extends javax.swing.JFrame {
         text = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
         key = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        letterA = new javax.swing.JTextField();
-        letterB = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         key5F = new javax.swing.JLabel();
         key1F = new javax.swing.JLabel();
@@ -85,10 +96,11 @@ public class ADGFX extends javax.swing.JFrame {
         textResult = new javax.swing.JTextArea();
         action = new javax.swing.JButton();
         exit = new javax.swing.JButton();
+        load = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(0));
+        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setText("Cifrado ADGFX");
@@ -108,11 +120,7 @@ public class ADGFX extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("Letras del alfabeto a igualar:");
-
-        jLabel5.setText("y");
-
-        jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(0));
+        jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         key5F.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -385,13 +393,20 @@ public class ADGFX extends javax.swing.JFrame {
             }
         });
 
+        load.setText("Cargar");
+        load.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(154, 154, 154)
                         .addComponent(jLabel1))
@@ -406,29 +421,19 @@ public class ADGFX extends javax.swing.JFrame {
                                 .addGap(21, 21, 21)
                                 .addComponent(jLabel3))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(letterA, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2)
+                                .addGap(39, 39, 39)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(letterB, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(action, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(31, 31, 31)
-                                        .addComponent(exit)))
-                                .addGap(0, 13, Short.MAX_VALUE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(load)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(action, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(exit, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -446,21 +451,17 @@ public class ADGFX extends javax.swing.JFrame {
                         .addComponent(key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel4)
-                        .addComponent(letterA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(letterB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel5))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(exit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(action, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(load)
+                            .addComponent(action, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(exit))
+                        .addGap(0, 30, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2))
                 .addContainerGap())
         );
 
@@ -470,8 +471,8 @@ public class ADGFX extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -496,21 +497,56 @@ public class ADGFX extends javax.swing.JFrame {
     private void encryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_encryptActionPerformed
         // TODO add your handling code here:
         action.setText("Encriptar");
-        action.setEnabled(true);
+        load.setEnabled(true);
     }//GEN-LAST:event_encryptActionPerformed
 
     private void decryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decryptActionPerformed
         // TODO add your handling code here:
         action.setText("Desencriptar");
-        action.setEnabled(true);
+        load.setEnabled(true);
     }//GEN-LAST:event_decryptActionPerformed
 
     private void actionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionActionPerformed
         // TODO add your handling code here:
         String word = text.getText();
         String textkey = key.getText();
-        String letraA = letterA.getText();
-        String letraB = letterB.getText();
+        FileReader fr = null;
+        BufferedReader br = null;
+        String cadena ="";
+        try {
+         // Apertura del fichero y creacion de BufferedReader para poder
+         // hacer una lectura comoda (disponer del metodo readLine()).
+            fr = new FileReader (file);
+            br = new BufferedReader(fr);
+         // Lectura del fichero
+            String linea;
+            int pos = 0;
+            
+            do {
+                linea=br.readLine();
+                System.out.println(linea);
+                if(pos==0) {
+                    letraA = ""+linea.charAt(0);
+                    letraB = ""+linea.charAt(1);
+                } else if(pos == 1){
+                    cadena = linea;
+                }
+                pos++;
+            }while((linea!=null));    
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+         // En el finally cerramos el fichero, para asegurarnos
+         // que se cierra tanto si todo va bien como si salta 
+         // una excepcion.
+            try{                    
+                if( null != fr ){   
+                    fr.close();     
+                }                  
+            }catch (Exception e2){ 
+                e2.printStackTrace();
+            }
+        }
         boolean encryptText = true;
         if(encrypt.isSelected()) {
             encryptText = true;
@@ -518,8 +554,7 @@ public class ADGFX extends javax.swing.JFrame {
             encryptText = false;
         }
         int[][] newAlfabeto = new int[5][5];
-        String result = ADGFXClass.ADFGX(word, textkey, encryptText, letraA, letraB);
-        newAlfabeto = ADGFXClass.alfabeto;
+        String result = ADGFXClass.ADFGX(word, textkey, encryptText, letraA, letraB, cadena);
         key1C.setText(""+textkey.charAt(0));
         key1F.setText(""+textkey.charAt(0));
         key2C.setText(""+textkey.charAt(1));
@@ -530,36 +565,46 @@ public class ADGFX extends javax.swing.JFrame {
         key4F.setText(""+textkey.charAt(3));
         key5C.setText(""+textkey.charAt(4));
         key5F.setText(""+textkey.charAt(4));
-
-        l1.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[0][0]]);
-        l2.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[0][1]]);
-        l3.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[0][2]]);
-        l4.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[0][3]]);
-        l5.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[0][4]]);
-        l6.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[1][0]]);
-        l7.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[1][1]]);
-        l8.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[1][2]]);
-        l9.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[1][3]]);
-        l10.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[1][4]]);
-        l11.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[2][0]]);
-        l12.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[2][1]]);
-        l13.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[2][2]]);
-        l14.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[2][3]]);
-        l15.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[2][4]]);
-        l16.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[3][0]]);
-        l17.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[3][1]]);
-        l18.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[3][2]]);
-        l19.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[3][3]]);
-        l20.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[3][4]]);
-        l21.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[4][0]]);
-        l22.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[4][1]]);
-        l23.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[4][2]]);
-        l24.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[4][3]]);
-        l25.setText(ADGFXClass.newAlphabetPlane[newAlfabeto[4][4]]);
+        
+        l1.setText(""+cadena.charAt(0));
+        l2.setText(""+cadena.charAt(1));
+        l3.setText(""+cadena.charAt(2));
+        l4.setText(""+cadena.charAt(3));
+        l5.setText(""+cadena.charAt(4));
+        l6.setText(""+cadena.charAt(5));
+        l7.setText(""+cadena.charAt(6));
+        l8.setText(""+cadena.charAt(7));
+        l9.setText(""+cadena.charAt(8));
+        l10.setText(""+cadena.charAt(9));
+        l11.setText(""+cadena.charAt(10));
+        l12.setText(""+cadena.charAt(11));
+        l13.setText(""+cadena.charAt(12));
+        l14.setText(""+cadena.charAt(13));
+        l15.setText(""+cadena.charAt(14));
+        l16.setText(""+cadena.charAt(15));
+        l17.setText(""+cadena.charAt(16));
+        l18.setText(""+cadena.charAt(17));
+        l19.setText(""+cadena.charAt(18));
+        l20.setText(""+cadena.charAt(19));
+        l21.setText(""+cadena.charAt(20));
+        l22.setText(""+cadena.charAt(21));
+        l23.setText(""+cadena.charAt(22));
+        l24.setText(""+cadena.charAt(23));
+        l25.setText(""+cadena.charAt(24));
 
         textResult.setText(result);
+        load.setEnabled(false);
         exit.setEnabled(true);
     }//GEN-LAST:event_actionActionPerformed
+
+    private void loadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadActionPerformed
+        // TODO add your handling code here:
+        JFileChooser selectFile = new JFileChooser();
+        selectFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        selectFile.showOpenDialog(this);
+        file = selectFile.getSelectedFile();
+        action.setEnabled(true);
+    }//GEN-LAST:event_loadActionPerformed
 
     /**
      * @param args the command line arguments
@@ -605,8 +650,6 @@ public class ADGFX extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -648,8 +691,7 @@ public class ADGFX extends javax.swing.JFrame {
     private javax.swing.JLabel l7;
     private javax.swing.JLabel l8;
     private javax.swing.JLabel l9;
-    private javax.swing.JTextField letterA;
-    private javax.swing.JTextField letterB;
+    private javax.swing.JButton load;
     private javax.swing.JTextArea text;
     private javax.swing.JTextArea textResult;
     // End of variables declaration//GEN-END:variables

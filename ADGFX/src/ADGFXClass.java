@@ -16,7 +16,7 @@ public class ADGFXClass {
     public static String[] newAlphabetPlane = new String[alphabetPlane.length - 1];
     public static String[] newAlphabetCiphered = new String[alphabetPlane.length - 1];
    
-    public static String ADFGX(String texto, String key, boolean action, String letraA, String letraB) {
+    public static String ADFGX(String texto, String key, boolean action, String letraA, String letraB, String cadena) {
         // TODO code application logic here
 
         //String text = "cualquiera";
@@ -31,19 +31,16 @@ public class ADGFXClass {
                 }
                 aux ++;
             }
-            int minimum = 0;
-            int maximum = 25;
-            int randomNum;
-            int[][] ran = new int[5][5];
+            
             for(int j = 0; j < 5; j ++) {
                 for(int k = 0; k < 5; k++) {
-                    randomNum = minimum + (int)(Math.random() * maximum);
-                    while(fueVisitado(randomNum)) {
-                        randomNum = minimum + (int)(Math.random() * maximum);
+                    int auxPos = (5*j)+(k+1);
+                    for(int r = 0; r < newAlphabetPlane.length; r++) {
+                        if(newAlphabetPlane[r].equals(""+cadena.charAt(auxPos-1))) {
+                            alfabeto[j][k]=r;
+                        }
                     }
-                    System.out.println("arroje esto: " + randomNum);
-                    alfabeto[j][k] = randomNum;
-                    visitados[randomNum] = 1;
+                    
                 }
             }
             return encrypt(sinEspacio, key, letraA, letraB);
