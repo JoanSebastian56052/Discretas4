@@ -209,7 +209,9 @@ public class AES {
         String aux1 = hexToBin(a);
         String aux2 = hexToBin(b);
         int i=0;
+        System.out.println(aux1 + "aux"+ aux2);
         while((i<aux1.length())) {
+            
             String a1 = ""+aux1.charAt(i);
             String a2 = ""+aux2.charAt(i);
             if(a1.equals("0") && a2.equals("0")) {
@@ -244,27 +246,39 @@ public class AES {
                 int round = r/4;
                 int auxR1 = r-1;
                 int auxR2 = r-4;
+                System.out.println("Round: " + round+ " Columna: "+r%4);
+                mostrarMatriz(clavesTotales);
                 if((r%4)==0) {
+                    
                     for(int h =0; h < claveAux.length; h++) {
                         claveAux[h][0] = clavesTotales[h][auxR1];
                     }
+                    mostrarMatriz(claveAux);
                     String auxiliar = claveAux[0][0];
                     claveAux[0][0] = claveAux[1][0];
                     claveAux[1][0] = claveAux[2][0];
                     claveAux[2][0] = claveAux[3][0];
                     claveAux[3][0] = auxiliar;
+                    System.out.println("ShiftRowsColumn");
+                    mostrarMatriz(claveAux);
                     for(int h =0; h < claveAux.length; h++) {
-                        String posA = ""+claveAux[h][r%4].charAt(0);
-                        String posB = ""+claveAux[h][r%4].charAt(1);
+                        System.out.println(claveAux[h][0]);
+                        System.out.println(claveAux[h][0].length());
+                        if(claveAux[h][0].length() == 1) {
+                            claveAux[h][0] = "0"+claveAux[h][0];
+                        }
+                        String posA = ""+claveAux[h][0].charAt(0);
+                        String posB = ""+claveAux[h][0].charAt(1);
                         int x = coordenada(posA);
                         int y = coordenada(posB);
-                        System.out.println(x + "" + y);
-                        claveAux[h][r%4] = SBox[x][y];
+                        System.out.println(x + "  " + y);
+                        claveAux[h][0] = SBox[x][y];
                     }
-                    
+                    System.out.println("SBox");
+                    mostrarMatriz(claveAux);
                     for(int k = 0; k < clave.length; k++) {
                         if(k==0){
-                            clavesTotales[k][r]=Suma(hexToBin(XOR(claveAux[k][0],clavesTotales[k][auxR2])),hexToBin("0"+round));
+                            clavesTotales[k][r]=binToHexa(XOR(hexToBin(XOR(claveAux[k][0],clavesTotales[k][auxR2])),hexToBin("0"+round)));
                         } else {
                             clavesTotales[k][r]=XOR(claveAux[k][0],clavesTotales[k][auxR2]);
                         }
