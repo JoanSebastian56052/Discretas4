@@ -15,11 +15,13 @@ public class AES {
     public static String[][] clavesRound = new String[4][4];
     public static String[][] estadoActual = new String[4][4];
     public static String[][] clavesTotales = new String[4][44];
+    
+    public static String[] claveRoundActual = {"01","02","04","08","10","20","40","80","1B","36"};
 
-    public static String estadoInicial[][] = {{"32","81","31","e0"},
+    public static String estadoInicial[][] = {{"32","88","31","e0"},
         {"43","5a","31","37"},
         {"F6","30","98","07"},
-        {"a8","8d","a2","38"}};
+        {"a8","8d","a2","34"}};
     
     public static String claveInicial[][] = {{"2b","28","ab","09"},
         {"7e","ae","F7","CF"},
@@ -79,16 +81,52 @@ public class AES {
         // TODO code application logic here
         obtenerClave(claveInicial);
         mostrarMatriz(clavesTotales);
+        for(int a = 0; a <= 10; a ++) {
+            if(a==0) {
+                for(int b =0; b < estadoActual.length; b++) {
+                    for (int c = 0; c < estadoActual[0].length; c++) {
+                        estadoActual[b][c]=XOR(estadoInicial[b][c], claveInicial[b][c]);
+                    }
+                }
+                mostrarMatriz(estadoActual);
+            } else if(a > 0 && a < 10) {
+                estadoActual = subBytes(estadoActual);
+                mostrarMatriz(estadoActual);
+                estadoActual = shiftRows(estadoActual);
+                mostrarMatriz(estadoActual);
+                estadoActual = mixColumns(estadoActual);
+                mostrarMatriz(estadoActual);
+                clavesRound = obtenerSiguienteClave(a);
+                mostrarMatriz(clavesRound);
+                for(int b =0; b < estadoActual.length; b++) {
+                    for (int c = 0; c < estadoActual[0].length; c++) {
+                        estadoActual[b][c]=XOR(estadoActual[b][c], clavesRound[b][c]);
+                    }
+                }
+            } else if(a == 10) {
+                clavesRound = obtenerSiguienteClave(a);
+                mostrarMatriz(clavesRound);
+                for(int b =0; b < estadoActual.length; b++) {
+                    for (int c = 0; c < estadoActual[0].length; c++) {
+                        estadoActual[b][c]=XOR(estadoActual[b][c], clavesRound[b][c]);
+                    }
+                }
+            }
+        }
 
     }
     public static String[][] subBytes(String[][] estado) {
         String[][] estadoAux = estado;
         String posA="";
         String posB="";
+        
         int x = 0;
         int y = 0;
         for(int i = 0; i < estado.length; i++) {
             for(int j = 0; j < estado[0].length; j++) {
+                if(estado[i][j].length()==1){
+                    estado[i][j]="0"+estado[i][j];
+                }
                 posA = ""+estado[i][j].charAt(0);
                 posB = ""+estado[i][j].charAt(1);
                 x = coordenada(posA);
@@ -115,29 +153,37 @@ public class AES {
         return estadoAux;
     }
     public static String[][] mixColumns(String[][] estado) {
-        String[][] estadoAux = estado;
-        for(int i = 0; i < estado.length; i++) {
-            for (int k= 0; k < estado.length; k++){
-                int j = 0;
+        String[][] estadoAux = new String[4][4];
+        mostrarMatriz(estado);
+        for(int z=0;z<estado.length;z++) {
+            for(int i = 0; i < estado.length; i++) {
                 String resultado = "00";
-                while(j < estado[0].length) {
-                    String aux1 = estado[j][i];
-                    String aux2 = galois[i][j];
+                for (int k= 0; k < estado.length; k++){
+                    String aux1 = estado[k][z];
+                    String aux2 = galois[i][k];
+                    if(aux1.length()==1) {
+                        aux1="0"+aux1;
+                    }
+                    if(aux2.length() == 1) {
+                        aux2="0"+aux2;
+                    }
+                    if(resultado.length()==1){
+                        resultado="0"+resultado;
+                    }
                     aux1 = hexToBin(aux1);
                     aux2 = hexToBin(aux2);
                     String auxResult = Multiplicacion(aux1, aux2);
-                    resultado = Suma(hexToBin(resultado), auxResult);
-                    j++;
+                    resultado = binToHexa(Suma(hexToBin(resultado), auxResult));
+                    if(resultado.length()==1){
+                        resultado="0"+resultado;
+                    }
                 }
-                resultado = binToHexa(resultado);
-                estadoAux[k][i] = resultado;
+                estadoAux[i][z] = resultado;
+                mostrarMatriz(estado);
+                mostrarMatriz(estadoAux);
+
             }
         }
-        return estadoAux;
-    }
-    public static String[][] addKeyRound(String[][] estado) {
-        String[][] estadoAux = estado;
-
         return estadoAux;
     }
     
@@ -191,17 +237,53 @@ public class AES {
         return x;
     }
     public static String Suma(String a, String b) {
-        int a1 = Integer.parseInt(a, 2);
-        int b1 = Integer.parseInt(b, 2);
-        int c1 = a1 + b1;
-        String resultado = Integer.toString(c1, 2);
+        int aux = a.length();
+        String resultado = "";
+        String acarreo = "0";
+        while(aux != 0 ) {
+            String a1 = ""+a.charAt(aux-1);
+            String a2 = ""+b.charAt(aux-1);
+            if(a1.equals("0") && a2.equals("0") && acarreo.equals("0")) {
+                resultado = "0" + resultado;
+            } else if(a1.equals("0") && a2.equals("0") && acarreo.equals("1")) {
+                resultado = "1" + resultado;
+                acarreo = "0";
+            } else if(a1.equals("0") && a2.equals("1") && acarreo.equals("0")) {
+                resultado = "1" + resultado;
+                acarreo = "0";
+            } else if(a1.equals("0") && a2.equals("1") && acarreo.equals("1")) {
+                resultado = "0" + resultado;
+                acarreo = "1";
+            } else if(a1.equals("1") && a2.equals("0") && acarreo.equals("0")) {
+                resultado = "1" + resultado;
+                acarreo = "0";
+            }else if(a1.equals("1") && a2.equals("0") && acarreo.equals("1")) {
+                resultado = "0" + resultado;
+                acarreo = "1";
+            } else if(a1.equals("1") && a2.equals("1") && acarreo.equals("0")) {
+                resultado = "0" + resultado;
+                acarreo = "1";
+            }else if(a1.equals("1") && a2.equals("1") && acarreo.equals("1")) {
+                resultado = "1" + resultado;
+                acarreo = "1";
+            }
+            aux--;
+        }
         return resultado;
     }
     public static String Multiplicacion(String a, String b) {
-        int a1 = Integer.parseInt(a, 2);
-        int b1 = Integer.parseInt(b, 2);
-        int c1 = a1 * b1;
-        String resultado = Integer.toString(c1, 2);
+        int aux = a.length();
+        String resultado = "";
+        while(aux != 0 ) {
+            String a1 = ""+a.charAt(aux-1);
+            String a2 = ""+b.charAt(aux-1);
+            if(a1.equals("1") && a2.equals("1")) {
+                resultado = "1"+resultado;
+            } else {
+                resultado = "0"+resultado;
+            }
+            aux--;
+        }
         return resultado;
     }
     public static String XOR(String a, String b){
@@ -263,7 +345,6 @@ public class AES {
                     mostrarMatriz(claveAux);
                     for(int h =0; h < claveAux.length; h++) {
                         System.out.println(claveAux[h][0]);
-                        System.out.println(claveAux[h][0].length());
                         if(claveAux[h][0].length() == 1) {
                             claveAux[h][0] = "0"+claveAux[h][0];
                         }
@@ -277,15 +358,34 @@ public class AES {
                     System.out.println("SBox");
                     mostrarMatriz(claveAux);
                     for(int k = 0; k < clave.length; k++) {
+                        String auxXOR1 = XOR(claveAux[k][0],clavesTotales[k][auxR2]);
+                        if(auxXOR1.length() == 1) {
+                            auxXOR1="0"+auxXOR1;
+                        }
+                        String auxXOR2=XOR(auxXOR1,claveRoundActual[round-1]);
                         if(k==0){
-                            clavesTotales[k][r]=binToHexa(XOR(hexToBin(XOR(claveAux[k][0],clavesTotales[k][auxR2])),hexToBin("0"+round)));
+                            clavesTotales[k][r]=auxXOR2;
+                            System.out.println("auxXOR2: "+auxXOR2);
                         } else {
-                            clavesTotales[k][r]=XOR(claveAux[k][0],clavesTotales[k][auxR2]);
+                            clavesTotales[k][r]=auxXOR1;
+                            System.out.println("auxXOR1: "+auxXOR1);
                         }
                     }
                 }else{
                     for(int k = 0; k < clave.length; k++) {
-                            clavesTotales[k][r]=XOR(clavesTotales[k][auxR2],clavesTotales[k][auxR1]);   
+                        if(clavesTotales[k][auxR1].length() == 1){
+                            System.out.println("error: "+clavesTotales[k][auxR1]);
+                            clavesTotales[k][auxR1]="0"+clavesTotales[k][auxR1];
+                        } 
+                        if(clavesTotales[k][auxR2].length() == 1) {
+                            clavesTotales[k][auxR2]="0"+clavesTotales[k][auxR2];
+                        }
+                            String auxXOR = XOR(clavesTotales[k][auxR1],clavesTotales[k][auxR2]);
+                            if(auxXOR.length()==1) {
+                                auxXOR="0"+auxXOR;
+                            }
+                            clavesTotales[k][r]=auxXOR;
+                            System.out.println("auxXOR: "+auxXOR);
                     }
                 }
                 r++;
@@ -295,9 +395,11 @@ public class AES {
         String[][] auxiliar = new String[4][4];
         int r = round*4;
         while (r < (round*4)+4) {
-            for(int i = 0; i < clavesTotales[0].length; i++) {
-                auxiliar[r%4][i] = clavesTotales[r+(r%4)][i];
+            for(int i = 0; i < clavesTotales.length; i++) {
+                int a = r%4;
+                auxiliar[i][a] = clavesTotales[i][r];
             }
+            r++;
         }
         return auxiliar;
     }
