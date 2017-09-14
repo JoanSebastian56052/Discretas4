@@ -103,7 +103,12 @@ public class AES {
                         estadoActual[b][c]=XOR(estadoActual[b][c], clavesRound[b][c]);
                     }
                 }
+                mostrarMatriz(estadoActual);
             } else if(a == 10) {
+                estadoActual = subBytes(estadoActual);
+                mostrarMatriz(estadoActual);
+                estadoActual = shiftRows(estadoActual);
+                mostrarMatriz(estadoActual);
                 clavesRound = obtenerSiguienteClave(a);
                 mostrarMatriz(clavesRound);
                 for(int b =0; b < estadoActual.length; b++) {
@@ -111,7 +116,9 @@ public class AES {
                         estadoActual[b][c]=XOR(estadoActual[b][c], clavesRound[b][c]);
                     }
                 }
+                mostrarMatriz(estadoActual);
             }
+            
         }
 
     }
@@ -154,10 +161,10 @@ public class AES {
     }
     public static String[][] mixColumns(String[][] estado) {
         String[][] estadoAux = new String[4][4];
-        mostrarMatriz(estado);
         for(int z=0;z<estado.length;z++) {
             for(int i = 0; i < estado.length; i++) {
                 String resultado = "00";
+                String resul = "";
                 for (int k= 0; k < estado.length; k++){
                     String aux1 = estado[k][z];
                     String aux2 = galois[i][k];
@@ -172,14 +179,54 @@ public class AES {
                     }
                     aux1 = hexToBin(aux1);
                     aux2 = hexToBin(aux2);
-                    String auxResult = Multiplicacion(aux1, aux2);
-                    resultado = binToHexa(Suma(hexToBin(resultado), auxResult));
+                    String auxResult="";
+                    String auxResult2 ="";
+                    String aux="";
+                    switch(Integer.parseInt(galois[i][k])) {
+                        
+                        case 1:
+                            resul =hexToBin(resultado);
+                            auxResult = XOR(resul,aux1);
+                            break;
+                        case 2:
+                            auxResult = aux1+"0";
+                            aux = ""+auxResult.charAt(0);
+                            if(auxResult.length() > 8 && aux.equals("1")) {
+                                auxResult = XOR(auxResult, "100011011");
+                            }
+                            while(auxResult.length() < 8) {
+                                auxResult = "0"+ auxResult;
+                            }
+                            resul =hexToBin(resultado);
+                            if(resul.length() == 8 && auxResult.length()==9) {
+                                resul="0"+resul;
+                            }
+                            auxResult = XOR(resul,auxResult);
+                            break;
+                        case 3:
+                            auxResult2 = aux1;
+                            auxResult = aux1 + "0";
+                            auxResult = XOR(auxResult, "0"+auxResult2);
+                            aux = ""+auxResult.charAt(0);
+                            if(auxResult.length() > 8 && aux.equals("1")) {
+                                auxResult = XOR(auxResult, "100011011");
+                            }
+                            while(auxResult.length() < 8) {
+                                auxResult = "0"+ auxResult;
+                            }
+                            while(auxResult2.length() < 8) {
+                                auxResult2 = "0"+ auxResult2;
+                            }
+                            resul =hexToBin(resultado);
+                            auxResult = XOR(resul,auxResult);
+                            break;
+                    }
+                    resultado = binToHexa(auxResult);
                     if(resultado.length()==1){
                         resultado="0"+resultado;
                     }
                 }
                 estadoAux[i][z] = resultado;
-                mostrarMatriz(estado);
                 mostrarMatriz(estadoAux);
 
             }
@@ -291,7 +338,6 @@ public class AES {
         String aux1 = hexToBin(a);
         String aux2 = hexToBin(b);
         int i=0;
-        System.out.println(aux1 + "aux"+ aux2);
         while((i<aux1.length())) {
             
             String a1 = ""+aux1.charAt(i);
@@ -328,23 +374,17 @@ public class AES {
                 int round = r/4;
                 int auxR1 = r-1;
                 int auxR2 = r-4;
-                System.out.println("Round: " + round+ " Columna: "+r%4);
-                mostrarMatriz(clavesTotales);
                 if((r%4)==0) {
                     
                     for(int h =0; h < claveAux.length; h++) {
                         claveAux[h][0] = clavesTotales[h][auxR1];
                     }
-                    mostrarMatriz(claveAux);
                     String auxiliar = claveAux[0][0];
                     claveAux[0][0] = claveAux[1][0];
                     claveAux[1][0] = claveAux[2][0];
                     claveAux[2][0] = claveAux[3][0];
                     claveAux[3][0] = auxiliar;
-                    System.out.println("ShiftRowsColumn");
-                    mostrarMatriz(claveAux);
                     for(int h =0; h < claveAux.length; h++) {
-                        System.out.println(claveAux[h][0]);
                         if(claveAux[h][0].length() == 1) {
                             claveAux[h][0] = "0"+claveAux[h][0];
                         }
@@ -352,11 +392,8 @@ public class AES {
                         String posB = ""+claveAux[h][0].charAt(1);
                         int x = coordenada(posA);
                         int y = coordenada(posB);
-                        System.out.println(x + "  " + y);
                         claveAux[h][0] = SBox[x][y];
                     }
-                    System.out.println("SBox");
-                    mostrarMatriz(claveAux);
                     for(int k = 0; k < clave.length; k++) {
                         String auxXOR1 = XOR(claveAux[k][0],clavesTotales[k][auxR2]);
                         if(auxXOR1.length() == 1) {
@@ -365,16 +402,13 @@ public class AES {
                         String auxXOR2=XOR(auxXOR1,claveRoundActual[round-1]);
                         if(k==0){
                             clavesTotales[k][r]=auxXOR2;
-                            System.out.println("auxXOR2: "+auxXOR2);
                         } else {
                             clavesTotales[k][r]=auxXOR1;
-                            System.out.println("auxXOR1: "+auxXOR1);
                         }
                     }
                 }else{
                     for(int k = 0; k < clave.length; k++) {
                         if(clavesTotales[k][auxR1].length() == 1){
-                            System.out.println("error: "+clavesTotales[k][auxR1]);
                             clavesTotales[k][auxR1]="0"+clavesTotales[k][auxR1];
                         } 
                         if(clavesTotales[k][auxR2].length() == 1) {
@@ -385,7 +419,6 @@ public class AES {
                                 auxXOR="0"+auxXOR;
                             }
                             clavesTotales[k][r]=auxXOR;
-                            System.out.println("auxXOR: "+auxXOR);
                     }
                 }
                 r++;
