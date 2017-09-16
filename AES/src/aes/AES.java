@@ -5,6 +5,8 @@
  */
 package aes;
 
+import javafx.scene.text.Text;
+
 /**
  *
  * @author joan.morales
@@ -79,8 +81,53 @@ public class AES {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        String text = "Píldora Thoth 30";
+        int bites = 0;
+        String otroEstado[][];
+        if(text.length() < 16) {
+            while(text.length() < 16) {
+                text = text+" ";
+            }
+        } else if(text.length() >16 && text.length() < 24) {
+            while(text.length() < 24) {
+                text = text+" ";
+            }
+        } else if(text.length() > 24 && text.length() < 32) {
+            while(text.length() < 32) {
+                text = text+" ";
+            }
+        } else if(text.length() > 32) {
+            System.out.println("ERROR EN EL TEXTO PLANO!!!");
+            System.exit(0);
+        }
+        int longitud = text.length();
+        switch(longitud) {
+            case 16:
+                bites = 128;
+                otroEstado = new String[4][longitud/4];
+                for(int i = 0; i < otroEstado.length; i++) {
+                    for(int j = 0; j < otroEstado[0].length; j++) {
+                        int pos = ((i*4) + j);
+                        otroEstado[j][i] = asciiToHex(""+text.charAt(pos));
+                    }
+                }
+                mostrarMatriz(otroEstado);
+                break;
+            case 24:
+                bites = 192;
+                otroEstado = new String[4][longitud/4];
+                for(int i = 0; i < otroEstado.length; i++) {
+                    for(int j = 0; j < otroEstado[0].length; j++) {
+                        int pos = ((i*4) + j);
+                        otroEstado[j][i] = asciiToHex(""+text.charAt(pos));
+                    }
+                }
+                mostrarMatriz(otroEstado);
+                break;
+        }
         obtenerClave(claveInicial);
         mostrarMatriz(clavesTotales);
+        
         for(int a = 0; a <= 10; a ++) {
             if(a==0) {
                 for(int b =0; b < estadoActual.length; b++) {
@@ -435,5 +482,23 @@ public class AES {
             r++;
         }
         return auxiliar;
+    }
+    
+    private static String asciiToHex(String asciiValue)    {
+        char[] chars = asciiValue.toCharArray();
+        StringBuffer hex = new StringBuffer();
+        for (int i = 0; i < chars.length; i++){
+            hex.append(Integer.toHexString((int) chars[i]));
+        }
+        return hex.toString();
+    }
+
+    private static String hexToASCII(String hexValue){
+        StringBuilder output = new StringBuilder("");
+        for (int i = 0; i < hexValue.length(); i += 2){
+            String str = hexValue.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+        return output.toString();
     }
 }
