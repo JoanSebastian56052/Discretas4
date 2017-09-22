@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddApartmentActivity">
+    tools:context=".AddApartmentActivity"
+    android:id="@+id/nuevo_apartamento">
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -119,11 +120,6 @@
                     android:layout_weight="3"
                     android:id="@+id/rg_radio_group"
                     android:checkedButton="@+id/rb_no_foto">
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No photo"
-                        android:id="@+id/rb_no_foto" />
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -1,7 +1,10 @@
 <resources>
     <string name="informacion_apartamento">Información Apartamento</string>
     <string name="no_usuario">El usuario o la contraseña ingresada son incorrectos</string>
+    <string name="email">Correo</string>
+    <string name="novalido">No valido</string>
     <string name="no_texto">No ha ingresado ningún dato para el campo</string>
+    <string name="apartamento_creado">Apartamento creado</string>
     <string name="sin_info">Sin informacion</string>
     <string name="app_name">LabsCM20172</string>
     <string name="txtusuario">Usuario</string>

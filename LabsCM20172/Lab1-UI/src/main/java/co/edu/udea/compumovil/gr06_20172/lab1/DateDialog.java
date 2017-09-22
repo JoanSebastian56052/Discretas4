@@ -9,14 +9,14 @@ import android.widget.DatePicker;
 import java.util.Calendar;
 
 /**
- * Created by dfrancisco.hernandez on 16/08/16.
+ * Created by joluditru on 19/03/2016.
  */
-public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-    //se crea la clase DatePicker para hacer uso de la fecha con una de las clases que android utiliza.
+public class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener{
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        // Set the current date in the DatePickerFragment
+        // Establece la fecha actual en el DatePickerFragment
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -24,12 +24,11 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
         // Create a new instance of DatePickerDialog and return it
         return new DatePickerDialog(getActivity(), this, year, month, day);
-
     }
 
+    // Callback to DatePickerActivity.onDateSet() to update the UI
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-        ((DatePickerDialog.OnDateSetListener) getActivity()).onDateSet(view,year,monthOfYear,dayOfMonth);
+        ((DatePickerDialog.OnDateSetListener) getActivity()).onDateSet(view, year, monthOfYear, dayOfMonth);
     }
 }

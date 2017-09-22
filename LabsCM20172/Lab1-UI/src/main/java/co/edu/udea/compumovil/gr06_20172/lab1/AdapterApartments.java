@@ -45,8 +45,8 @@ public class AdapterApartments extends RecyclerView.Adapter<AdapterApartments.Ev
         viewHolder.position = i;
 
         viewHolder.nombreApartamento.setText(listaCarreras.get(i).getNombre());
-        viewHolder.tipoApartamento.setText(listaCarreras.get(i).getDistancia());
-        viewHolder.descripcionApartamento.setText(listaCarreras.get(i).getLugar());
+        viewHolder.tipoApartamento.setText(listaCarreras.get(i).getTipo());
+        viewHolder.descripcionApartamento.setText(listaCarreras.get(i).getDescripcion());
 
         //Convertir imagen byte[] a Bitmap
         byte[] byteArray;
@@ -93,8 +93,8 @@ public class AdapterApartments extends RecyclerView.Adapter<AdapterApartments.Ev
             intent.putExtra(InfoApartmentActivity.TAG_TIPO,tipoApartamento.getText());
             intent.putExtra(InfoApartmentActivity.TAG_DESCRIPCION,descripcionApartamento.getText());
             intent.putExtra(InfoApartmentActivity.TAG_AREA, listaCarreras.get(position).getDescripcion());
-            intent.putExtra(InfoApartmentActivity.TAG_DIRECCION, listaCarreras.get(position).getTelefono());
-            intent.putExtra(InfoApartmentActivity.TAG_VALOR, listaCarreras.get(position).getCorreo());
+            intent.putExtra(InfoApartmentActivity.TAG_DIRECCION, listaCarreras.get(position).getDireccion());
+            intent.putExtra(InfoApartmentActivity.TAG_VALOR, listaCarreras.get(position).getValor());
             return intent;
         }
     }

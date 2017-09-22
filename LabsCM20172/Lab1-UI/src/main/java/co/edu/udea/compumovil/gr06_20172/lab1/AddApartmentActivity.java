@@ -78,7 +78,6 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
         btnCrearCarrera = (Button) findViewById(R.id.buttonApartamento);
         rbCamara = (RadioButton) findViewById(R.id.rb_camara);
         rbGaleria = (RadioButton) findViewById(R.id.rb_galeria);
-        actualizarCampoFecha(obtenerFechaActual());
         btnCrearCarrera.setOnClickListener(this);
         dbHelper = new DbHelper(this);
 
@@ -140,16 +139,11 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
                 values.put(TableColumnsApartments.VALOR, valorApartamento);
                 values.put(TableColumnsApartments.FOTO, foto);
 
-                dbHelper.insertar(DBAppRun.TABLE_EVENTS, values);
-
-                String mensaje = getResources().getString(R.string.carrera_creada);
-                Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
+                dbHelper.insertar(DBAppApartment.TABLE_APARTMENTS, values);
 
                 this.finish();
 
             case R.id.btn_subir:
-
-                if (!rbNoFoto.isChecked()) {
                     Intent intent = null;
                     int codigo = 0;
                     if (rbCamara.isChecked()) {
@@ -168,14 +162,6 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
                     if (isIntentSafe) {
                         startActivityForResult(intent, codigo);
                     }
-                } else {
-                    foto = null;
-                }
-                break;
-
-            case R.id.txt_fecha_carrera:
-                DialogFragment datePickerFragment = new DateDialog();
-                datePickerFragment.show(getFragmentManager(), "Date");
                 break;
         }
     }
@@ -186,11 +172,6 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
         //Referencia la ActionBar como Toolbar
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            //Atributos de la Toolbar
-            ab.setTitle(R.string.title_nueva_carrera);
-            ab.setIcon(R.mipmap.logo_grupo5);
-        }
     }
 
     //Verifica si un campo de texto es vacío
@@ -199,7 +180,7 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
         boolean retorno = true;
         if (campo.trim().isEmpty()){
             mensaje = getResources().getString(R.string.no_texto)+ ": " + getResources().getString(referencia);
-            Snackbar.make(findViewById(R.id.nuevo_evento), mensaje, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.nuevo_apartamento), mensaje, Snackbar.LENGTH_SHORT).show();
             retorno = false;
         }
         return retorno;
@@ -217,8 +198,6 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
                     try {
                         is = getContentResolver().openInputStream(imagenSeleccionada);
                         foto = getBytes(is);
-                        mensaje = getResources().getString(R.string.foto_cargada);
-                        Snackbar.make(btnSubirImagen, mensaje, Snackbar.LENGTH_LONG).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -229,23 +208,8 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
                 if (photo != null) {
                     photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 }
-                mensaje = getResources().getString(R.string.foto_cargada);
-                Snackbar.make(btnSubirImagen, mensaje, Snackbar.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        mYear = year;
-        mMonth = monthOfYear+1;
-        mDay = dayOfMonth;
-        int mDate[] = {mYear,mMonth,mDay};
-        actualizarCampoFecha(mDate);
-    }
-
-    private boolean checkEmail(String email) {
-        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
@@ -257,50 +221,5 @@ public class AddApartmentActivity extends AppCompatActivity implements View.OnCl
             byteBuffer.write(buffer, 0, len);
         }
         return byteBuffer.toByteArray();
-    }
-    // Actualiza la fecha en el TextView
-    private void actualizarCampoFecha(int[] date) {
-        mYear = date[0];
-        mMonth = date[1];
-        mDay = date[2];
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(mYear);
-        if (mMonth < 9){
-            stringBuilder.append("-0");
-        }else {
-            stringBuilder.append("-");
-        }
-        stringBuilder.append(mMonth);
-        if (mDay < 10){
-            stringBuilder.append("-0");
-        }else {
-            stringBuilder.append("-");
-        }
-        stringBuilder.append(mDay);
-        txtFecha.setText(stringBuilder);
-    }
-
-    //Obtiene la fecha actual del dispositivo
-    public int[] obtenerFechaActual(){
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        int date [] = {year,month+1,day};
-        return date;
-    }
-
-    //Verifica que la fecha no sea superior a la actual
-    public boolean validarFecha(int fecha[]) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date fechaActual = sdf.parse(fecha[0]+"-"+fecha[1]+"-"+fecha[2]);
-        Date fechaIngresada = sdf.parse(mYear+"-"+mMonth+"-"+mDay);
-
-        int i = fechaActual.compareTo(fechaIngresada);
-        if (fechaActual.compareTo(fechaIngresada)!=1){
-            return true;
-        }else {
-            return false;
-        }
     }
 }

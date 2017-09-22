@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -11,7 +12,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,283 +30,325 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
 
 
 /**
  * Created by Viviana Londoño on 22/08/2017.
  */
 
-public class Register extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class Register extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
-    private TextView txt;
-    private Button btn;
-    private Bitmap picture;
-    private boolean control=false;
-    private static final int REQUEST_CODE_GALLERY=1;
-    private ImageView targetImage;
-    EditText[] txtValidate = new EditText[9];
-    DbHelper dbH;
-    SQLiteDatabase db;
-    private RadioGroup grupo;
-    String option = "";
-    String optionSelect = "";
+    //Caracteres para validación de correo
+    public static final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                    "\\." +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                    ")+"
+    );
+
+    private final static int FOTO_GALERIA = 70;
+    private final static int FOTO_CAMARA = 80;
+
+    private Button btnGuardar;
+    private Button btnSubir;
+    private EditText txtNombre;
+    private EditText txtApellido;
+    private EditText txtEmail;
+    private EditText txtContrasena;
+    private EditText txtTelefono;
+    private RadioButton rbCamara;
+    private RadioButton rbGaleria;
+    private DbHelper dbHelper;
+    private int mYear;
+    private int mMonth;
+    private int mDay;
+    private EditText txtFecha;
+    private EditText txtCiudad;
+    private EditText txtDireccion;
+    private byte[] foto;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {//graba los datos de los usuarios
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        //Se usa autocompletar para hacer uso en la selección de ciudades
-        AutoCompleteTextView ciudad = (AutoCompleteTextView) findViewById(R.id.txtRegisterCity);
-        String[] cities = getResources().getStringArray(R.array.cities_array);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, cities);
-        ciudad.setAdapter(adapter);
-        Log.d("tag1","acá en el on create");
 
-        picture = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_profile);
-        txtValidate[0]=(EditText)findViewById(R.id.txtRegisterEmail);
-        txtValidate[1]=(EditText)findViewById(R.id.textRegisterPass);
-        txtValidate[2]=(EditText)findViewById(R.id.txtRegisterPassConf);
-        txtValidate[3]=(EditText)findViewById(R.id.txtRegisterName);
-        txtValidate[4]=(EditText)findViewById(R.id.txtRegisterLastName);
-        txtValidate[5]=(EditText)findViewById(R.id.txtRegisterDate);
-        txtValidate[6]=(EditText)findViewById(R.id.txtRegisterPhone);
-        txtValidate[7]=(EditText)findViewById(R.id.txtRegisterAddress);
-        txtValidate[8]=(EditText)findViewById(R.id.txtRegisterCity);
-        grupo = (RadioGroup) findViewById(R.id.rbRegisterGender);
+        foto = null;
+        btnGuardar = (Button) findViewById(R.id.btnEnviarRegistro);
+        btnSubir = (Button) findViewById(R.id.btn_subir);
+        txtEmail = (EditText) findViewById(R.id.txtRegisterEmail);
+        txtFecha = (EditText) findViewById(R.id.txtRegisterDate);
+        txtDireccion = (EditText) findViewById(R.id.txtRegisterAddress);
+        txtTelefono = (EditText) findViewById(R.id.txtRegisterPhone);
+        txtCiudad = (EditText) findViewById(R.id.txtRegisterCity);
+        txtNombre = (EditText) findViewById(R.id.txtRegisterName);
+        txtApellido = (EditText) findViewById(R.id.txtRegisterLastName);
+        txtNombre.requestFocus();
+        txtContrasena = (EditText) findViewById(R.id.txtRegisterPassConf);
+        rbCamara = (RadioButton) findViewById(R.id.rb_camara);
+        rbGaleria = (RadioButton) findViewById(R.id.rb_galeria);
+        actualizarCampoFecha(obtenerFechaActual());
+        setToolbar();
 
-        grupo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        dbHelper = new DbHelper(this);
 
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // TODO Auto-generated method stub
-                optionSelect = itemChecked (checkedId);
-                Log.d("tag1","acá adentro");
-                Log.d("tag1", optionSelect);
-            }
-        });
-
-        dbH = new DbHelper(this);
-        btn = (Button)findViewById(R.id.btnEnviarRegistro);
-        btn.setEnabled(false);
-        TextWatcher btnActivation = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(verificarVaciosSinMessage(txtValidate)){btn.setEnabled(true);}
-                else{btn.setEnabled(false);}
-            }
-        };
-        for (int n = 0; n < txtValidate.length; n++)
-        {
-            txtValidate[n].addTextChangedListener(btnActivation);
-        }
-        targetImage = (ImageView)findViewById(R.id.profilePicture);
-        targetImage.setImageBitmap(picture);
-
-
+        btnGuardar.setOnClickListener(this);
+        btnSubir.setOnClickListener(this);
     }
-
-
 
     @Override
-    public void finish() {//terminar la operación activity validando los dos campos usuario y password
-        Intent data = new Intent();
-        if(control) {
-            data.putExtra("email", txtValidate[0].getText().toString());
-            data.putExtra("pass", txtValidate[2].getText().toString());
-        } else{
-            data.putExtra("email", ".");
-            data.putExtra("pass", ".");
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnEnviarRegistro:
+                boolean existeUsuario;
+                String nombre;
+                String contrasena;
+                String correo;
+                String fecha;
+                String direccion;
+                String ciudad;
+                String apellido;
+                String telefono;
+                boolean fechaValida=true;
+
+                // Extraer los datos ingresados
+                nombre = txtNombre.getText().toString();
+                contrasena = txtContrasena.getText().toString();
+                correo = txtEmail.getText().toString();
+                fecha = txtFecha.getText().toString();
+                apellido = txtApellido.getText().toString();
+                direccion = txtDireccion.getText().toString();
+                ciudad = txtCiudad.getText().toString();
+                telefono = txtTelefono.getText().toString();
+                //Obtiene el dato y valida el campo
+                if (!validarCampo(telefono,R.string.telefono)){
+                    return;
+                }
+                if (!validarCampo(nombre,R.string.name)){
+                    return;
+                }
+                //Obtiene el dato y valida el campo
+                if (!validarCampo(contrasena,R.string.txtpassword)){
+                    return;
+                }
+                if (!validarCampo(contrasena,R.string.confirmarConstraseña)){
+                    return;
+                }
+                //Obtiene el dato y valida el campo
+                if (!validarCampo(correo,R.string.email)){
+                    return;
+                }
+                if (!checkEmail(correo)){
+                    Snackbar.make(v, getResources().getString(R.string.novalido), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!validarCampo(apellido,R.string.lastname)){
+                    return;
+                }
+                if (!validarCampo(ciudad,R.string.ciudad)){
+                    return;
+                }
+                if (!validarCampo(direccion,R.string.direccion)){
+                    return;
+                }
+                //Obtiene el dato y valida el campo
+                if (!validarCampo(fecha,R.string.fechaNacimiento)){
+                    return;
+                }
+
+                try {
+                    //Captura respuesta boolean del método validarFecha
+                    fechaValida = validarFecha(obtenerFechaActual());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //Determina si la fecha es válida
+                if (!fechaValida){
+                    Snackbar.make(v, getResources().getString(R.string.novalido), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                existeUsuario = dbHelper.consultarUsuarioRegistro(correo);
+                if (existeUsuario) {
+                    String mensaje = getResources().getString(R.string.novalido);
+                    Snackbar.make(v, mensaje, Snackbar.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    // Se prepara el ContentValues para insertar el usuario
+                    ContentValues values = new ContentValues();
+                    values.put(TableColumnsUser.NOMBRE, nombre);
+                    values.put(TableColumnsUser.NOMBRE, nombre);
+                    values.put(TableColumnsUser.CONTRASEÑA, contrasena);
+                    values.put(TableColumnsUser.EMAIL, correo);
+                    values.put(TableColumnsUser.FOTO, foto);
+                    dbHelper.insertar(DBAppApartment.TABLE_USERS, values);
+
+                    String mensaje = getResources().getString(R.string.novalido);
+                    Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
+
+                    Intent intentResult = new Intent();
+                    intentResult.putExtra(Login.TAG_USUARIO, nombre);
+                    intentResult.putExtra(Login.TAG_CONTRASENA, contrasena);
+                    // Activity finished ok, return the data
+                    setResult(RESULT_OK, intentResult);
+                    this.finish();
+                }
+                break;
+            case R.id.btn_subir:
+                    Intent intent = null;
+                    int codigo = 0;
+                    if (rbCamara.isChecked()) {
+                        intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        codigo = FOTO_CAMARA;
+                    } else if (rbGaleria.isChecked()) {
+                        intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                        codigo = FOTO_GALERIA;
+                    }
+                    // Verificar si hay aplicaciones disponibles
+                    PackageManager packageManager = getPackageManager();
+                    List activities = packageManager.queryIntentActivities(intent, 0);
+                    boolean isIntentSafe = activities.size() > 0;
+
+                    // Si hay, entonces ejecutamos la actividad
+                    if (isIntentSafe) {
+                        startActivityForResult(intent, codigo);
+                    }
+
+                break;
+            case R.id.txtRegisterDate:
+                DialogFragment datePickerFragment = new DateDialog();
+                datePickerFragment.show(getFragmentManager(), "Date");
+                break;
         }
-        setResult(RESULT_OK,data);
-        super.finish();
-    }
-
-    public void Validar(View v){
-        View focusView=null;
-        if (!verificarVacios(txtValidate)){
-        }else if(!txtValidate[0].getText().toString().contains("@")){
-            txtValidate[0].setError(getString(R.string.invalid_mail));
-            focusView = txtValidate[0];
-        }else{
-            if (!txtValidate[2].getText().toString().equals(txtValidate[1].getText().toString())){
-                txtValidate[2].setError(getString(R.string.pass_no_equals));
-                focusView = txtValidate[2];
-            }else if(!existEmail(txtValidate[0].getText().toString())){
-                db = dbH.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                Cursor search = db.rawQuery("select count(*) from usuario", null);
-                search.moveToFirst();
-                int aux=Integer.parseInt(search.getString(0));
-                values.put(StatusContract.Column_User.ID,(aux+1));
-                values.put(StatusContract.Column_User.MAIL, txtValidate[0].getText().toString());
-                values.put(StatusContract.Column_User.PASS, txtValidate[1].getText().toString());
-                values.put(StatusContract.Column_User.NAME, txtValidate[3].getText().toString());
-                values.put(StatusContract.Column_User.LASTNAME, txtValidate[4].getText().toString());
-                values.put(StatusContract.Column_User.DATE, txtValidate[5].getText().toString());
-                values.put(StatusContract.Column_User.PHONE, txtValidate[6].getText().toString());
-                values.put(StatusContract.Column_User.ADDRESS, txtValidate[7].getText().toString());
-                values.put(StatusContract.Column_User.CITY, txtValidate[8].getText().toString());
-                values.put(StatusContract.Column_User.GENDER, optionSelect);
-                values.put(StatusContract.Column_User.PICTURE, getBitmapAsByteArray(picture));
-                db.insertWithOnConflict(StatusContract.TABLE_USER, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-                db.close();
-                control=true;
-                finish();
-            }
-            else
-            {
-                txtValidate[0].setError(getString(R.string.user_exists));
-                focusView = txtValidate[0];
-            }
-        }
-
-    }
-
-
-    /**
-     * Método para verificar si el email existe
-     * @param sEmail
-     * @return
-     */
-    public boolean existEmail(String sEmail)//verifiacion de nombre de usuario
-    {
-        db = dbH.getWritableDatabase();
-        Cursor nick=db.rawQuery("select * from "+StatusContract.TABLE_USER+" where email='"+sEmail+"'", null);
-        if (nick.moveToFirst()) {
-            db.close();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Método para verificar vacíos
-     * @param txtValidate
-     * @return
-     */
-    public boolean verificarVacios(EditText[] txtValidate)//verificacion de campo requerido
-    {
-        View focus=null;
-        for(int i=0; i<txtValidate.length;i++)
-        {
-            if((txtValidate[i].getText().toString()).isEmpty())
-            {
-                txtValidate[i].setError(getString(R.string.field_required));
-                focus = txtValidate[i];
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Método para verificar vacíos sin mensaje
-     * @param txtValidate
-     * @return
-     */
-    public boolean verificarVaciosSinMessage(EditText[] txtValidate)
-    {
-        View focus=null;
-        for(int i=0; i<txtValidate.length;i++)
-        {
-            if((txtValidate[i].getText().toString()).isEmpty())
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Método para hacer la llamada externa de la aplicación a la galería
-     * @param v
-     */
-    public void ClickGallery(View v) {//llamada externa de la aplicacion a galeria
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_CODE_GALLERY);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && (requestCode==REQUEST_CODE_GALLERY )){
-            try {
-                Uri targetUri = data.getData();
-                picture = redimensionarImagenMaximo(BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri)),350,350);
-                targetImage.setImageBitmap(picture);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+        if (resultCode == RESULT_OK) {
+            String mensaje;
+            if (requestCode == FOTO_GALERIA) {
+                if (data != null) {
+                    Uri imagenSeleccionada = data.getData();
+                    InputStream is;
+                    try {
+                        is = getContentResolver().openInputStream(imagenSeleccionada);
+                        foto = getBytes(is);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (requestCode == FOTO_CAMARA) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                if (photo != null) {
+                    photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                }
             }
         }
     }
 
-
-    /**
-     * Método para obtener el arreglo de bitmap
-     * @param bitmap
-     * @return
-     */
-    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-        return outputStream.toByteArray();
+    private void setToolbar() {
+        //Crea el widget Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
+        //Referencia la ActionBar como Toolbar
+        setSupportActionBar(toolbar);
+        final ActionBar ab = getSupportActionBar();
     }
 
-    /**
-     * Método para redimensionar el tamaño de la imagen
-     * @param mBitmap
-     * @param newWidth
-     * @param newHeigth
-     * @return
-     */
-    public Bitmap redimensionarImagenMaximo(Bitmap mBitmap, float newWidth, float newHeigth){//tamaño de la imagen
-        int width = mBitmap.getWidth();
-        int height = mBitmap.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeigth) / height;
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        return Bitmap.createBitmap(mBitmap, 0, 0, width, height, matrix, false);
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 
-    //Este metodo es para el uso del datePicker la vista
-    public void onEditSet(View v){
-        DialogFragment datePickerFragment = new DatePickerFragment();
-        datePickerFragment.show(getFragmentManager(), "datePicker");
+    private boolean checkEmail(String email) {
+        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
+    }
+
+    //Verifica si un campo de texto es vacío
+    private boolean validarCampo(String campo, int referencia){
+        String mensaje;
+        boolean retorno = true;
+        if (campo.trim().isEmpty()){
+            mensaje = getResources().getString(R.string.no_texto)+ ": " + getResources().getString(referencia);
+            Snackbar.make(findViewById(R.id.layout_register), mensaje, Snackbar.LENGTH_SHORT).show();
+            retorno = false;
+        }
+        return retorno;
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        //se usa para implementar el metodo DatePicker
-        EditText fecha  = (EditText)findViewById(R.id.txtRegisterDate);
-        fecha.setText(new StringBuilder().append(year).append("/").append(monthOfYear).append("/").append(dayOfMonth));
+    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+
+        mYear = year;
+        mMonth = monthOfYear+1;
+        mDay = dayOfMonth;
+        int mDate[] = {mYear,mMonth,mDay};
+        actualizarCampoFecha(mDate);
     }
 
-    private String itemChecked (int id) {
-        option = "vacio";
-        RadioButton item1 = (RadioButton) findViewById (R.id.rbRegisterGenderF);
-        RadioButton item2 = (RadioButton) findViewById (R.id.rbRegisterGenderM);
-
-        // Compruebo si el id coincide con alguno de los RadioButton
-        if (item1.getId() == id){
-            option = "Femenino";
+    private void actualizarCampoFecha(int[] date) {
+        mYear = date[0];
+        mMonth = date[1];
+        mDay = date[2];
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(mYear);
+        if (mMonth < 9){
+            stringBuilder.append("-0");
+        }else {
+            stringBuilder.append("-");
         }
-        if (item2.getId() == id){
-            option = "Masculino";
+        stringBuilder.append(mMonth);
+        if (mDay < 10){
+            stringBuilder.append("-0");
+        }else {
+            stringBuilder.append("-");
         }
-        return(option);
+        stringBuilder.append(mDay);
+        txtFecha.setText(stringBuilder);
     }
 
+    //Obtiene la fecha actual del dispositivo
+    public int[] obtenerFechaActual(){
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        int date [] = {year,month+1,day};
+        return date;
+    }
+
+    //Verifica que la fecha no sea superior a la actual
+    public boolean validarFecha(int fecha[]) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaActual = sdf.parse(fecha[0]+"-"+fecha[1]+"-"+fecha[2]);
+        Date fechaIngresada = sdf.parse(mYear+"-"+mMonth+"-"+mDay);
+
+        int i = fechaActual.compareTo(fechaIngresada);
+        if (fechaActual.compareTo(fechaIngresada)!=1){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

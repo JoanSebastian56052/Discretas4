@@ -22,52 +22,43 @@ import android.widget.TextView;
  */
 public class InformationFragment extends Fragment {
 
-    private ImageView targetImageR;
-    DbHelper dbHelper;
-    SQLiteDatabase db;
-    TextView[] txtValidateR = new TextView[8];
-    View view;
+    public static final String TAG_USER = "user";
+    private ImageView ivPerfil;
+    private TextView lblName;
+    private TextView lblLastName;
+    private TextView lblDireccion;
+    private TextView lblTelefono;
+    private TextView lblCiudad;
+    private TextView lblFecha;
+    private TextView lblCorreo;
+    private DbHelper dbHelper;
 
-    public InformationFragment() {//activity que enseña información
-
+    public InformationFragment() {
+        // Required empty public constructor
     }
-
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        dbHelper =new DbHelper(getActivity().getBaseContext());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        view=inflater.inflate(R.layout.fragment_information, container, false);
-        txtValidateR[0]=(TextView)view.findViewById(R.id.viewName);
-        txtValidateR[1]=(TextView)view.findViewById(R.id.viewLastName);
-        txtValidateR[2]=(TextView)view.findViewById(R.id.viewEmail);
-        txtValidateR[3]=(TextView)view.findViewById(R.id.viewGender);
-        txtValidateR[4]=(TextView)view.findViewById(R.id.viewDate);
-        txtValidateR[5]=(TextView)view.findViewById(R.id.viewPhone);
-        txtValidateR[6]=(TextView)view.findViewById(R.id.viewAddress);
-        txtValidateR[7]=(TextView)view.findViewById(R.id.viewCity);
-        targetImageR=(ImageView)view.findViewById(R.id.viewProfile);
-        db= dbHelper.getWritableDatabase();
-        Cursor search = db.rawQuery("select * from " + StatusContract.TABLE_LOGIN, null);
+        View view = inflater.inflate(R.layout.fragment_information, container, false);
 
-        search.moveToFirst();
-        String aux = search.getString(1);
-        Log.d("tag",aux);
-        search = db.rawQuery("select * from "+StatusContract.TABLE_USER+ " where "+StatusContract.Column_User.MAIL+"='"+aux+"'", null);
-        search.moveToFirst();
-        Log.d("prueba",search.getString(1));
-        txtValidateR[0].setText("Nombre: "+search.getString(2));
-        txtValidateR[1].setText("Apellido: "+search.getString(3));
-        txtValidateR[2].setText("E-mail:"+search.getString(1));
-        txtValidateR[3].setText("Género:"+search.getString(4));
-        txtValidateR[4].setText("Fecha de nacimiento:"+search.getString(5));
-        txtValidateR[5].setText("Teléfono:"+search.getString(6));
-        txtValidateR[6].setText("Dirección:"+search.getString(7));
-        txtValidateR[7].setText("Ciudad:"+search.getString(9));
-        byte[] auxx=search.getBlob(10);
-        Bitmap pict= BitmapFactory.decodeByteArray(auxx, 0, (auxx).length);
-        targetImageR.setImageBitmap(pict);
-        db.close();
+        String usuario = getArguments().getString(TAG_USER);
+
+        ivPerfil = (ImageView) view.findViewById(R.id.viewProfile);
+        lblName = (TextView) view.findViewById(R.id.viewName);
+        lblCorreo = (TextView) view.findViewById(R.id.viewEmail);
+
+        dbHelper = new DbHelper(getContext());
+        Usuario usuarioDB = dbHelper.consultarUsuario(usuario);
+        if (usuarioDB.getFoto() != null) {
+            ivPerfil.setImageBitmap(BitmapFactory.decodeByteArray(usuarioDB.getFoto(), 0, usuarioDB.getFoto().length));
+        }
+        lblName.setText(usuarioDB.getUsuario());
+        lblCorreo.setText(usuarioDB.getEmail());
+
+        // Inflate the layout for this fragment
         return view;
     }
+
 }

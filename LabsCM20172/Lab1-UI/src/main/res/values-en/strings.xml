@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="informacion_apartamento">Information Apartment</string>
+    <string name="email">Email</string>
+    <string name="novalido">Wrong</string>
     <string name="sin_info">Without Infromation</string>
     <string name="no_usuario">User or pass are incorrects</string>
+    <string name="apartamento_creado">Apartment added</string>
     <string name="no_texto">Empty</string>
     <string name="app_name">LabsCM20172</string>
     <string name="btningresar">Sign in</string>

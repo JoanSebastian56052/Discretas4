@@ -26,7 +26,7 @@ public class DbHelper extends SQLiteOpenHelper{
 
         //Crear la tabla users
         sql = String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT, %s BLOB)",
-                DBAppApartment.TABLE_USERS, TableColumnsUser.USUARIO, TableColumnsUser.CONTRASEÑA,
+                DBAppApartment.TABLE_USERS, TableColumnsUser.NOMBRE, TableColumnsUser.CONTRASEÑA,
                 TableColumnsUser.EMAIL, TableColumnsUser.FOTO);
 
         //Sentencia para crear la tabla
@@ -76,7 +76,7 @@ public class DbHelper extends SQLiteOpenHelper{
         }
     }
 
-    public ArrayList<Apartment> consultarCarreras() {
+    public ArrayList<Apartment> consultarApartamentos() {
         String[] campos = new String[]{TableColumnsApartments.NOMBRE,
                 TableColumnsApartments.TIPO, TableColumnsApartments.DESCRIPCION, TableColumnsApartments.AREA,
                 TableColumnsApartments.DIRECCION, TableColumnsApartments.VALOR,
@@ -115,7 +115,7 @@ public class DbHelper extends SQLiteOpenHelper{
     public Usuario consultarUsuario(String user) {
         String[] campos = new String[]{TableColumnsUser.EMAIL, TableColumnsUser.FOTO};
         String[] argumentos = new String[]{user};
-        String consulta = TableColumnsUser.USUARIO + "=?";
+        String consulta = TableColumnsUser.EMAIL + "=?";
         SQLiteDatabase db = this.getWritableDatabase();
         Usuario usuario = null;
         try {
@@ -143,9 +143,9 @@ public class DbHelper extends SQLiteOpenHelper{
     }
 
     public boolean consultarUsuarioInicio(String user, String pass){
-        String[] campos = new String[]{TableColumnsUser.USUARIO};
+        String[] campos = new String[]{TableColumnsUser.EMAIL};
         String[] argumentos = new String[]{user, pass};
-        String consulta = TableColumnsUser.USUARIO + "=? AND " + TableColumnsUser.CONTRASEÑA + "=?";
+        String consulta = TableColumnsUser.EMAIL + "=? AND " + TableColumnsUser.CONTRASEÑA + "=?";
         SQLiteDatabase db = this.getWritableDatabase();
         boolean retorno = false;
         try {
@@ -170,9 +170,9 @@ public class DbHelper extends SQLiteOpenHelper{
     }
 
     public boolean consultarUsuarioRegistro(String user){
-        String[] campos = new String[]{TableColumnsUser.USUARIO};
+        String[] campos = new String[]{TableColumnsUser.EMAIL};
         String[] argumentos = new String[]{user};
-        String consulta = TableColumnsUser.USUARIO + "=?";
+        String consulta = TableColumnsUser.EMAIL + "=?";
         SQLiteDatabase db = this.getWritableDatabase();
         boolean retorno = false;
         try {
