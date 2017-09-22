@@ -25,10 +25,10 @@ public class AES {
         {"F6","30","98","07"},
         {"a8","8d","a2","34"}};
     
-    public static String claveInicial[][] = {{"2b","28","ab","09"},
-        {"7e","ae","F7","CF"},
-        {"15","d2","15","4F"},
-        {"16","a6","88","3c"}};
+    public static String claveInicial[][] = {{"63","65","20","62"},
+        {"6c","20","31","69"},
+        {"61","64","32","74"},
+        {"76","65","38","73"}};
     
     public static String SBox[][] = {
         {"63","7C","77","7B","F2","6B","6F","C5","30","01","67","2B","FE","D7","AB","76"},
@@ -83,7 +83,7 @@ public class AES {
         // TODO code application logic here
         String text = "Píldora Thoth 30";
         int bites = 0;
-        String otroEstado[][];
+        String[][] otroEstado = new String[4][4];
         if(text.length() < 16) {
             while(text.length() < 16) {
                 text = text+" ";
@@ -113,23 +113,15 @@ public class AES {
                 }
                 mostrarMatriz(otroEstado);
                 break;
-            case 24:
-                bites = 192;
-                otroEstado = new String[4][longitud/4];
-                for(int i = 0; i < otroEstado.length; i++) {
-                    for(int j = 0; j < otroEstado[0].length; j++) {
-                        int pos = ((i*4) + j);
-                        otroEstado[j][i] = asciiToHex(""+text.charAt(pos));
-                    }
-                }
-                mostrarMatriz(otroEstado);
-                break;
         }
         obtenerClave(claveInicial);
         mostrarMatriz(clavesTotales);
+        estadoInicial = otroEstado;
+        mostrarMatriz(estadoInicial);
         
         for(int a = 0; a <= 10; a ++) {
             if(a==0) {
+                System.out.println("addRoundKey: Ronda = "+ a);
                 for(int b =0; b < estadoActual.length; b++) {
                     for (int c = 0; c < estadoActual[0].length; c++) {
                         estadoActual[b][c]=XOR(estadoInicial[b][c], claveInicial[b][c]);
@@ -137,14 +129,20 @@ public class AES {
                 }
                 mostrarMatriz(estadoActual);
             } else if(a > 0 && a < 10) {
+                System.out.println("subBytes: Round = " + a);
                 estadoActual = subBytes(estadoActual);
                 mostrarMatriz(estadoActual);
+                System.out.println("shiftRows: Round = " + a);
                 estadoActual = shiftRows(estadoActual);
                 mostrarMatriz(estadoActual);
+                System.out.println("mixColumn: Round = " + a);
                 estadoActual = mixColumns(estadoActual);
                 mostrarMatriz(estadoActual);
+                System.out.println("Clave: Round = " + a);
                 clavesRound = obtenerSiguienteClave(a);
                 mostrarMatriz(clavesRound);
+                System.out.println("addRoundKey: Ronda = "+ a);
+
                 for(int b =0; b < estadoActual.length; b++) {
                     for (int c = 0; c < estadoActual[0].length; c++) {
                         estadoActual[b][c]=XOR(estadoActual[b][c], clavesRound[b][c]);
@@ -152,10 +150,13 @@ public class AES {
                 }
                 mostrarMatriz(estadoActual);
             } else if(a == 10) {
+                System.out.println("subBytes: Ronda = "+ a);
                 estadoActual = subBytes(estadoActual);
                 mostrarMatriz(estadoActual);
+                System.out.println("shiftRows: Ronda = "+ a);
                 estadoActual = shiftRows(estadoActual);
                 mostrarMatriz(estadoActual);
+                System.out.println("addRoundKey: Ronda = "+ a);
                 clavesRound = obtenerSiguienteClave(a);
                 mostrarMatriz(clavesRound);
                 for(int b =0; b < estadoActual.length; b++) {
@@ -167,7 +168,14 @@ public class AES {
             }
             
         }
-
+        System.out.println("Resultado final:");
+        String result ="";
+        for(int i = 0; i < estadoActual.length; i++) {
+            for (int  j = 0; j < estadoActual[0].length; j ++) {
+                result = result + estadoActual[j][i];
+            }
+        }
+        System.out.println(result);
     }
     public static String[][] subBytes(String[][] estado) {
         String[][] estadoAux = estado;
@@ -274,7 +282,6 @@ public class AES {
                     }
                 }
                 estadoAux[i][z] = resultado;
-                mostrarMatriz(estadoAux);
 
             }
         }
