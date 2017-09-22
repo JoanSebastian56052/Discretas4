@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/nuevo_evento"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityNuevaCarrera">
+
+    <android.support.v7.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/appbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/elevation4">
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:padding="@dimen/margin"
+        android:layout_gravity="end">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lbl_informacion_evento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/informacion_carrera"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"/>
+
+            <EditText
+                android:id="@+id/txt_nombre_carrera"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/regular_height"
+                android:hint="@string/nombre_carrera"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:inputType="textCapWords|textNoSuggestions"/>
+
+            <EditText
+                android:id="@+id/txt_distancia"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/regular_height"
+                android:hint="@string/distancia_carrera"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:imeOptions="actionNext"
+                android:inputType="number|textNoSuggestions"/>
+
+            <EditText
+                android:id="@+id/txt_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/regular_height"
+                android:hint="@string/lugar_carrera"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:inputType="textCapWords|textNoSuggestions"/>
+
+            <EditText
+                android:id="@+id/txt_fecha_carrera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/formato_fecha"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:editable="false"/>
+
+            <EditText
+                android:id="@+id/txt_descripcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/descripcion_carrera"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="@dimen/margin">
+
+                <RadioGroup
+                    android:layout_width="@dimen/none"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:id="@+id/rg_radio_group"
+                    android:checkedButton="@+id/rb_no_foto">
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_foto"
+                        android:id="@+id/rb_no_foto" />
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/foto_camara"
+                        android:id="@+id/rb_camara" />
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/foto_galeria"
+                        android:id="@+id/rb_galeria" />
+                </RadioGroup>
+                <Button
+                    android:id="@+id/btn_subir"
+                    android:layout_width="@dimen/none"
+                    android:layout_height="@dimen/regular_height"
+                    android:layout_weight="2"
+                    android:text="@string/subir"
+                    android:textSize="@dimen/standar_size"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="@dimen/margin"
+                    android:background="@color/colorAccent"
+                    android:elevation="@dimen/elevation4"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lbl_contacto_carrera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/contacto_carrera"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"/>
+
+            <EditText
+                android:id="@+id/txt_telefono_carrera"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/regular_height"
+                android:hint="@string/telefono_carrera"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:imeOptions="actionNext"
+                android:inputType="number|textNoSuggestions"/>
+
+            <EditText
+                android:id="@+id/txt_correo_carrera"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/regular_height"
+                android:hint="@string/correo_carrera"
+                android:textSize="@dimen/standar_size"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin"
+                android:inputType="textEmailAddress|textNoSuggestions"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/none"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/margin">
+
+        <Button
+            android:id="@+id/btn_crear_carrera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/crear_carrera"
+            android:textSize="@dimen/standar_size"
+            android:layout_gravity="center"
+            android:background="@color/colorAccent"
+            android:elevation="@dimen/elevation4"/>
+    </LinearLayout>
+</LinearLayout>
