@@ -1,4 +1,4 @@
-package co.edu.udea.compumovil.gr06_20172.lab1;
+package co.edu.udea.compumovil.gr06_20172.lab1.DBApartment;
 
 /**
  * Created by asus on 11/03/2016.

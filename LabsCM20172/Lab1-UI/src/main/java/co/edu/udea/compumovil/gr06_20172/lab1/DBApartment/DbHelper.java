@@ -1,4 +1,4 @@
-package co.edu.udea.compumovil.gr06_20172.lab1;
+package co.edu.udea.compumovil.gr06_20172.lab1.DBApartment;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+
+import co.edu.udea.compumovil.gr06_20172.lab1.Model.Apartment;
+import co.edu.udea.compumovil.gr06_20172.lab1.Model.Usuario;
 
 /**
  * Created by Viviana Londoño on 22/08/2017.
@@ -25,9 +28,10 @@ public class DbHelper extends SQLiteOpenHelper{
         String sql;
 
         //Crear la tabla users
-        sql = String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT, %s BLOB)",
-                DBAppApartment.TABLE_USERS, TableColumnsUser.NOMBRE, TableColumnsUser.CONTRASEÑA,
-                TableColumnsUser.EMAIL, TableColumnsUser.FOTO);
+        sql = String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s BLOB)",
+                DBAppApartment.TABLE_USERS, TableColumnsUser.NOMBRE, TableColumnsUser.APELLIDO, TableColumnsUser.CONTRASEÑA,
+                TableColumnsUser.EMAIL, TableColumnsUser.CIUDAD, TableColumnsUser.TELEFONO, TableColumnsUser.DIRECCION,
+                TableColumnsUser.DATE, TableColumnsUser.GENERO, TableColumnsUser.FOTO);
 
         //Sentencia para crear la tabla
         Log.d(TAG, "onCreate with SQL: " + sql);
@@ -35,7 +39,7 @@ public class DbHelper extends SQLiteOpenHelper{
 
         //Crear la tabla events
         sql = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, " +
-                        "%s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s BLOB)",
+                        "%s TEXT, %s TEXT, %s TEXT, %s TEXT, %s BLOB)",
                 DBAppApartment.TABLE_APARTMENTS, TableColumnsApartments.ID, TableColumnsApartments.NOMBRE,
                 TableColumnsApartments.TIPO, TableColumnsApartments.DESCRIPCION, TableColumnsApartments.AREA,
                 TableColumnsApartments.DIRECCION, TableColumnsApartments.VALOR,
@@ -125,9 +129,15 @@ public class DbHelper extends SQLiteOpenHelper{
                 //Recorremos el cursor hasta que no haya más registros
                 do {
                     usuario = new Usuario();
-                    usuario.setUsuario(user);
+                    usuario.setUsuario(c.getString(c.getColumnIndex(TableColumnsUser.NOMBRE)));
+                    usuario.setApellido(c.getString(c.getColumnIndex(TableColumnsUser.APELLIDO)));
                     usuario.setEmail(c.getString(c.getColumnIndex(TableColumnsUser.EMAIL)));
+                    usuario.setDireccion(c.getString(c.getColumnIndex(TableColumnsUser.DIRECCION)));
+                    usuario.setCiudad(c.getString(c.getColumnIndex(TableColumnsUser.CIUDAD)));
+                    usuario.setGenero(c.getString(c.getColumnIndex(TableColumnsUser.GENERO)));
+                    usuario.setTelefono(c.getString(c.getColumnIndex(TableColumnsUser.TELEFONO)));
                     usuario.setFoto(c.getBlob(c.getColumnIndex(TableColumnsUser.FOTO)));
+                    usuario.setFechaNacimiento(c.getString(c.getColumnIndex(TableColumnsUser.DATE)));
                 } while (c.moveToNext());
                 Log.d(TAG, "Se ha consultado en la base de datos");
             }else{

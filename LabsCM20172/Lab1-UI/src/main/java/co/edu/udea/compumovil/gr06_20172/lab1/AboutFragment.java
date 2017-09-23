@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import co.edu.udea.compumovil.gr06_20172.lab1.R;
+
 
 /**
  * A simple {@link Fragment} subclass.

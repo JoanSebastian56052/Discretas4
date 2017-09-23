@@ -1,4 +1,4 @@
-package co.edu.udea.compumovil.gr06_20172.lab1;
+package co.edu.udea.compumovil.gr06_20172.lab1.Model;
 
 /**
  * Created by joan.morales on 21/09/17.

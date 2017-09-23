@@ -54,7 +54,7 @@ public class InfoApartmentActivity extends AppCompatActivity {
         lblDescripcion.setText(descripcion);
         lblTipo.setText(tipo);
         lblArea.setText(area);
-        lblDireccion.setText(descripcion);
+        lblDireccion.setText(direccion);
         lblValor.setText(valor);
     }
 

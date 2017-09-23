@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import co.edu.udea.compumovil.gr06_20172.lab1.Model.Apartment;
+
 /**
  * Created by joluditru on 18/03/2016.
  */

@@ -41,6 +41,7 @@ public class FragmentPerfil extends Fragment {
         lblUsuario = (TextView) view.findViewById(R.id.lbl_nombre_usuario);
         lblCorreo = (TextView) view.findViewById(R.id.lbl_email);
 
+
         dbHelper = new DBHelper(getContext());
         Usuario usuarioDB = dbHelper.consultarUsuario(usuario);
         if (usuarioDB.getFoto() != null) {

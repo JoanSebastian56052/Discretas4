@@ -5,11 +5,7 @@ import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,23 +13,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -42,6 +31,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.DBAppApartment;
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.DbHelper;
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.TableColumnsUser;
 
 
 /**
@@ -73,12 +66,14 @@ public class Register extends AppCompatActivity implements View.OnClickListener,
     private EditText txtTelefono;
     private RadioButton rbCamara;
     private RadioButton rbGaleria;
+    private RadioButton rbFemale;
+    private RadioButton rbMale;
     private DbHelper dbHelper;
     private int mYear;
     private int mMonth;
     private int mDay;
     private EditText txtFecha;
-    private EditText txtCiudad;
+    private AutoCompleteTextView txtCiudad;
     private EditText txtDireccion;
     private byte[] foto;
 
@@ -86,7 +81,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        String[] cities = getResources().getStringArray(R.array.cities_array);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, cities);
+        txtCiudad.setAdapter(adapter);
         foto = null;
         btnGuardar = (Button) findViewById(R.id.btnEnviarRegistro);
         btnSubir = (Button) findViewById(R.id.btn_subir);
@@ -94,13 +91,15 @@ public class Register extends AppCompatActivity implements View.OnClickListener,
         txtFecha = (EditText) findViewById(R.id.txtRegisterDate);
         txtDireccion = (EditText) findViewById(R.id.txtRegisterAddress);
         txtTelefono = (EditText) findViewById(R.id.txtRegisterPhone);
-        txtCiudad = (EditText) findViewById(R.id.txtRegisterCity);
+        txtCiudad = (AutoCompleteTextView) findViewById(R.id.txtRegisterCity);
         txtNombre = (EditText) findViewById(R.id.txtRegisterName);
         txtApellido = (EditText) findViewById(R.id.txtRegisterLastName);
-        txtNombre.requestFocus();
+        txtEmail.requestFocus();
         txtContrasena = (EditText) findViewById(R.id.txtRegisterPassConf);
         rbCamara = (RadioButton) findViewById(R.id.rb_camara);
         rbGaleria = (RadioButton) findViewById(R.id.rb_galeria);
+        rbFemale =(RadioButton) findViewById(R.id.rbRegisterGenderF);
+        rbMale =(RadioButton) findViewById(R.id.rbRegisterGenderM);
         actualizarCampoFecha(obtenerFechaActual());
         setToolbar();
 
@@ -123,6 +122,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener,
                 String ciudad;
                 String apellido;
                 String telefono;
+                String genero = "";
                 boolean fechaValida=true;
 
                 // Extraer los datos ingresados
@@ -182,6 +182,14 @@ public class Register extends AppCompatActivity implements View.OnClickListener,
                     Snackbar.make(v, getResources().getString(R.string.novalido), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
+                if(rbFemale.isChecked()) {
+                    genero = "Femenino";
+                } else if(rbMale.isChecked()) {
+                    genero = "Masculino";
+                } else {
+                    rbFemale.requestFocus();
+                    rbMale.requestFocus();
+                }
                 existeUsuario = dbHelper.consultarUsuarioRegistro(correo);
                 if (existeUsuario) {
                     String mensaje = getResources().getString(R.string.novalido);
@@ -191,9 +199,14 @@ public class Register extends AppCompatActivity implements View.OnClickListener,
                     // Se prepara el ContentValues para insertar el usuario
                     ContentValues values = new ContentValues();
                     values.put(TableColumnsUser.NOMBRE, nombre);
-                    values.put(TableColumnsUser.NOMBRE, nombre);
+                    values.put(TableColumnsUser.APELLIDO, apellido);
                     values.put(TableColumnsUser.CONTRASEÑA, contrasena);
                     values.put(TableColumnsUser.EMAIL, correo);
+                    values.put(TableColumnsUser.CIUDAD, ciudad);
+                    values.put(TableColumnsUser.DATE, fecha);
+                    values.put(TableColumnsUser.DIRECCION,direccion);
+                    values.put(TableColumnsUser.GENERO, genero);
+                    values.put(TableColumnsUser.TELEFONO,telefono);
                     values.put(TableColumnsUser.FOTO, foto);
                     dbHelper.insertar(DBAppApartment.TABLE_USERS, values);
 

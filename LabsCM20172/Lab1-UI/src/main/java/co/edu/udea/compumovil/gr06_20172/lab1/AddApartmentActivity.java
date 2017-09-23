@@ -1,7 +1,5 @@
 package co.edu.udea.compumovil.gr06_20172.lab1;
 
-import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,20 +13,19 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.DBAppApartment;
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.DbHelper;
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.TableColumnsApartments;
+import co.edu.udea.compumovil.gr06_20172.lab1.R;
 
 public class AddApartmentActivity extends AppCompatActivity implements View.OnClickListener {
     private final static int FOTO_GALERIA = 90;

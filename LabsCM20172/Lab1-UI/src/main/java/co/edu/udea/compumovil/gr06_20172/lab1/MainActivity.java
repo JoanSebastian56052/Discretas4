@@ -17,12 +17,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.DbHelper;
+import co.edu.udea.compumovil.gr06_20172.lab1.DBApartment.TableColumnsUser;
+
 public class MainActivity extends AppCompatActivity {
     //declaracion de variables globes
     DbHelper dbHelper;
     SQLiteDatabase db;
     FloatingActionButton fab;
-    AddApartmentFragment add = new AddApartmentFragment();
     ApartmentFragment apar = new ApartmentFragment();
     ///////////////
     Fragment apart = new ApartmentFragment();
@@ -70,12 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                             //Replacing the main content with ContentFragment Which is our Inbox View;
-                            case R.id.addApart:
-                                AddApartmentFragment fragment5 = new AddApartmentFragment();
-                                FragmentTransaction fragmentTransaction5 = getSupportFragmentManager().beginTransaction();
-                                fragmentTransaction5.replace(R.id.fragment_container,fragment5);
-                                fragmentTransaction5.commit();
-                                return true;
                             case R.id.info:
                                 //Toast.makeText(getApplicationContext(),"Info Selected",Toast.LENGTH_SHORT).show();
                                 InformationFragment fragment = new InformationFragment();
@@ -99,14 +95,6 @@ public class MainActivity extends AppCompatActivity {
                                 fragmentTransaction3.commit();
                                 //fab.setVisibility(View.VISIBLE);
                                 return true;
-                            case R.id.edit:
-                                //Toast.makeText(getApplicationContext(),"Edit Selected",Toast.LENGTH_SHORT).show();
-                                EditFragment fragment1 = new EditFragment();
-                                FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
-                                fragmentTransaction1.replace(R.id.fragment_container,fragment1);
-                                fragmentTransaction1.commit();
-                                //fab.setVisibility(View.INVISIBLE);
-                                return true;
                             case R.id.notification:
                                 NotificationFragment fragment4 = new NotificationFragment();
                                 FragmentTransaction fragmentTransaction4 = getSupportFragmentManager().beginTransaction();
@@ -119,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
                             case R.id.action_exit:
                                 db = dbHelper.getWritableDatabase();
-                                db.execSQL("delete from " + StatusContract.TABLE_LOGIN);
+                                db.execSQL("delete from " + TableColumnsUser.class);
                                 db.close();
                                 //Toast.makeText(getApplicationContext(),"Exit Selected",Toast.LENGTH_SHORT).show();
                                 Intent newActivity = new Intent(MainActivity.this, Login.class);
@@ -149,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_exit) {
             db = dbHelper.getWritableDatabase();
-            db.execSQL("delete from " + StatusContract.TABLE_LOGIN);
+            db.execSQL("delete from " + DbHelper.class);
             db.close();
             Intent newActivity = new Intent(this, Login.class);
             startActivity(newActivity);
@@ -160,23 +148,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public void AgregarApartamento(View v){
-        FragmentTransaction fragmentTransaction5 = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction5.replace(R.id.fragment_container,add);
-        fragmentTransaction5.commit();
+        Intent newActivity = new Intent(MainActivity.this, AddApartmentActivity.class);
+        startActivity(newActivity);
+        finish();
     }
-
-    public void GClic(View v){
-        add.ClickGalleryR();
-    }
-
-    public void otroApartamento(View v){
-        add.ValidarApartamentos();
-        Toast.makeText(getApplicationContext(),"Apartment list",Toast.LENGTH_SHORT).show();
-        ApartmentFragment fragment3 = new ApartmentFragment();
-        FragmentTransaction fragmentTransaction3 = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction3.replace(R.id.fragment_container,fragment3);
-        fragmentTransaction3.commit();
-        //fab.setVisibility(View.VISIBLE);
-    }
-
 }

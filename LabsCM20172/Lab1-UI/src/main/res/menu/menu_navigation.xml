@@ -17,11 +17,6 @@
             android:tint="@color/blanco"
             android:title="@string/apartments"/>
         <item
-            android:id="@+id/addApart"
-            android:icon="@drawable/ic_add"
-            android:tint="@color/blanco"
-            android:title="@string/agregar"/>
-        <item
             android:id="@+id/notification"
             android:icon="@drawable/ic_notifications"
             android:tint="@color/blanco"
